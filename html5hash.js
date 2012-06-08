@@ -14,7 +14,7 @@ $().ready(function () {
     }
 
     function progressiveRead(file, work, done) {
-        var chunkSize = 102400; // 100KiB at a time
+        var chunkSize = 20480; // 20KiB at a time
         var pos = 0;
         var reader = new FileReader();
 
