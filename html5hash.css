@@ -1,0 +1,10 @@
+﻿div#drop_zone {
+    text-align: center;
+    border: 1px dashed black;
+    width: auto;
+    height: 50px;
+}
+
+ul#list {
+    list-style: none;
+}
