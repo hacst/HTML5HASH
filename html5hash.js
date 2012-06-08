@@ -7,30 +7,64 @@ $().ready(function () {
         return number.toString(16);
     }
 
+    function progressiveRead(file, work, done) {
+        var chunkSize = 102400; // 100KiB at a time
+        var pos = 0;
+        var reader = new FileReader();
+
+        function progressiveReadNext() {
+            var end = Math.min(pos + chunkSize, file.size);
+
+            reader.onload = function (e) {
+                pos += chunkSize;
+                work(e.target.result, file);
+                if (pos < file.size) {
+                    setTimeout(progressiveReadNext, 0);
+                }
+                else {
+                    // Done
+                    done(file);
+                }
+            }
+
+            reader.readAsBinaryString(file.slice(pos, end));
+        }
+
+        setTimeout(progressiveReadNext, 0);
+    };
+
+    function progressiveHash(file) {
+
+    }
+
     function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-
         var files = evt.dataTransfer.files; // FileList object.
 
-        // files is a FileList of File objects. List some properties.
-        var f = files[0];
         for (var i = 0, f; f = files[i]; i++) {
-            var reader = new FileReader();
-            reader.onload = (function(file) {
-                return function (e) {
-                    var sha1 = CryptoJS.SHA1(e.target.result);
-                    var md5 = CryptoJS.MD5(e.target.result);
-                    var crc = decimalToHexString(crc32(e.target.result));
+
+            (function() {
+                var sha1proc = CryptoJS.algo.SHA1.create();
+                var md5proc = CryptoJS.algo.MD5.create();
+                var crc32intermediate = 0;
+
+                progressiveRead(f,
+                function (data, file) {
+                    // Work
+                    sha1proc.update(data);
+                    md5proc.update(data);
+                    crc32intermediate = crc32(data, crc32intermediate);
+                },
+                function (file) {
+                    // Done
                     document.getElementById('list').innerHTML
                         += '<li><b>' + escape(file.name) + ':</b><br />'
-                        + 'SHA1: ' + sha1 + '<br />'
-                        + 'MD5: ' + md5 + '<br />'
-                        + 'CRC-32: ' + crc + '</li>';
-                };
-            })(f);
-
-            reader.readAsBinaryString(f);
+                        + 'SHA1: ' + sha1proc.finalize() + '<br />'
+                        + 'MD5: ' + md5proc.finalize() + '<br />'
+                        + 'CRC-32: ' + decimalToHexString(crc32intermediate) + '</li>';
+                });
+            })();
         };
 
     }
