@@ -33,7 +33,13 @@ $().ready(function () {
                 }
             }
 
-            reader.readAsBinaryString(file.slice(pos, end));
+            if (file.slice) {
+                var blob = file.slice(pos, end);
+            }
+            else if (file.webkitSlice) {
+                var blob = file.webkitSlice(pos, end);
+            }
+            reader.readAsBinaryString(blob);
         }
 
         setTimeout(progressiveReadNext, 0);
