@@ -1,4 +1,10 @@
 $().ready(function () {
+    var uniquecnt = 0;
+
+    function getUnique() {
+        return (uniquecnt++);
+    }
+
     function decimalToHexString(number) {
         if (number < 0) {
             number = 0xFFFFFFFF + number + 1;
@@ -17,7 +23,7 @@ $().ready(function () {
 
             reader.onload = function (e) {
                 pos += chunkSize;
-                work(e.target.result, file);
+                work(e.target.result, pos, file);
                 if (pos < file.size) {
                     setTimeout(progressiveReadNext, 0);
                 }
@@ -33,10 +39,6 @@ $().ready(function () {
         setTimeout(progressiveReadNext, 0);
     };
 
-    function progressiveHash(file) {
-
-    }
-
     function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
@@ -49,20 +51,32 @@ $().ready(function () {
                 var md5proc = CryptoJS.algo.MD5.create();
                 var crc32intermediate = 0;
 
+                var uid = "filehash" + getUnique();
+
+                f.uid = uid;
+                $("#list").append('<li id="' + uid + '">'
+                    + '<b>' + escape(f.name) + '</b>'
+                    + '<div class="progress"></div>'
+                    + '</li>');
+
+                $("#" + uid + ".progress").progressbar({ value: 0 });
+
                 progressiveRead(f,
-                function (data, file) {
+                function (data, pos, file) {
                     // Work
+                    var progress = Math.floor((pos / file.size) * 100);
+                    $("#" + file.uid + " .progress").progressbar({ value: progress });
+
                     sha1proc.update(data);
                     md5proc.update(data);
                     crc32intermediate = crc32(data, crc32intermediate);
                 },
                 function (file) {
                     // Done
-                    document.getElementById('list').innerHTML
-                        += '<li><b>' + escape(file.name) + ':</b><br />'
-                        + 'SHA1: ' + sha1proc.finalize() + '<br />'
+                    $("#" + file.uid).append(
+                        'SHA1: ' + sha1proc.finalize() + '<br />'
                         + 'MD5: ' + md5proc.finalize() + '<br />'
-                        + 'CRC-32: ' + decimalToHexString(crc32intermediate) + '</li>';
+                        + 'CRC-32: ' + decimalToHexString(crc32intermediate));
                 });
             })();
         };
