@@ -13,6 +13,18 @@ $().ready(function () {
         return number.toString(16);
     }
 
+    function arrayToString(dataTypedArray) {
+        var i, il;
+        var tmp = [];
+        var tostr = String.fromCharCode;
+
+        for (i = 0, il = dataTypedArray.length; i < il; ++i) {
+            tmp[i] = tostr(dataTypedArray[i]);
+        }
+
+        return tmp.join('');
+    }
+
     function progressiveRead(file, work, done) {
         var chunkSize = 20480; // 20KiB at a time
         var pos = 0;
@@ -39,7 +51,7 @@ $().ready(function () {
             else if (file.webkitSlice) {
                 var blob = file.webkitSlice(pos, end);
             }
-            reader.readAsBinaryString(blob);
+            reader.readAsArrayBuffer(blob);
         }
 
         setTimeout(progressiveReadNext, 0);
@@ -52,14 +64,23 @@ $().ready(function () {
 
         for (var i = 0, f; f = files[i]; i++) {
 
-            (function() {
-                var sha1proc = CryptoJS.algo.SHA1.create();
-                var md5proc = CryptoJS.algo.MD5.create();
-                var crc32intermediate = 0;
+            (function () {
+                var doSHA1 = $('[name="sha1switch"]').attr("checked") == "checked";
+                var doMD5 = $('[name="md5switch"]').attr("checked") == "checked";
+                var doCRC32 = $('[name="crc32switch"]').attr("checked") == "checked";
+                console.debug(doSHA1);
+
+                if (doSHA1) var sha1proc = CryptoJS.algo.SHA1.create();
+                if (doMD5) var md5proc = CryptoJS.algo.MD5.create();
+                if (doCRC32) var crc32intermediate = 0;
 
                 var uid = "filehash" + getUnique();
 
                 f.uid = uid;
+                f.doSHA1 = doSHA1;
+                f.doMD5 = doMD5;
+                f.doCRC32 = doCRC32;
+
                 $("#list").append('<li id="' + uid + '">'
                     + '<b>' + escape(f.name) + '</b>'
                     + '<div class="progress"></div>'
@@ -73,16 +94,22 @@ $().ready(function () {
                     var progress = Math.floor((pos / file.size) * 100);
                     $("#" + file.uid + " .progress").progressbar({ value: progress });
 
-                    sha1proc.update(data);
-                    md5proc.update(data);
-                    crc32intermediate = crc32(data, crc32intermediate);
+                    if (file.doSHA1 || file.doMD5) {
+                        var copy = arrayToString(new Uint8Array(data));
+                    }
+                    if (file.doSHA1) sha1proc.update(copy);
+                    if (file.doMD5) md5proc.update(copy);
+                    if (file.doCRC32) crc32intermediate = crc32(new Uint8Array(data), crc32intermediate);
                 },
                 function (file) {
                     // Done
-                    $("#" + file.uid).append(
-                        'SHA1: ' + sha1proc.finalize() + '<br />'
-                        + 'MD5: ' + md5proc.finalize() + '<br />'
-                        + 'CRC-32: ' + decimalToHexString(crc32intermediate));
+                    var results = '';
+
+                    if (file.doSHA1) results += 'SHA1: ' + sha1proc.finalize() + '<br />';
+                    if (file.doMD5) results += 'MD5: ' + md5proc.finalize() + '<br />';
+                    if (file.doCRC32) results += 'CRC-32: ' + decimalToHexString(crc32intermediate) + '<br />';
+                    
+                    $("#" + file.uid).append(results);
                 });
             })();
         };

@@ -17,6 +17,15 @@
 <body>
 <h1>html5hash</h1>
 <div id="drop_zone">Drop files here</div>
+
+<fieldset id="algo_selection">
+    <legend>Algorithm selection</legend>
+    <form>
+        <input type="checkbox" name="sha1switch" checked="checked" />SHA1
+        <input type="checkbox" name="md5switch" checked="checked" />MD5
+        <input type="checkbox" name="crc32switch" checked="checked" />CRC-32
+    </form>
+</fieldset>
 <output><pre id="list"></pre></output>
 
 </body>
