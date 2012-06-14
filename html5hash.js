@@ -22,7 +22,7 @@ $().ready(function () {
             var end = Math.min(pos + chunkSize, file.size);
 
             reader.onload = function (e) {
-                pos += chunkSize;
+                pos = end;
                 work(e.target.result, pos, file);
                 if (pos < file.size) {
                     setTimeout(progressiveReadNext, 0);
@@ -39,17 +39,39 @@ $().ready(function () {
             else if (file.webkitSlice) {
                 var blob = file.webkitSlice(pos, end);
             }
-            reader.readAsBinaryString(blob);
+            reader.readAsArrayBuffer(blob);
         }
 
         setTimeout(progressiveReadNext, 0);
+    };
+
+    function arrayBufferToWordArray(arrayBuffer) {
+        var u8 = new Uint8Array(arrayBuffer);
+        var cp = []
+        for (var i = 0; i < 4 * Math.floor(u8.length / 4) ; i += 4) {
+            cp.push((u8[i] << 24) + (u8[i + 1] << 16) + (u8[i + 2] << 8) + u8[i + 3]);
+        }
+
+        if (u8.length % 4) {
+            var pad = 0;
+            for (var i = u8.length % 4; i > 0; --i) {
+                pad = pad << 8;
+                pad += u8[u8.length - i];
+            }
+            for (var i = 0; i < 4 - (u8.length % 4) ; ++i) {
+                pad = pad << 8;
+            }
+            cp.push(pad)
+        }
+
+        return CryptoJS.lib.WordArray.create(cp, u8.length);
     };
 
     function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         var files = evt.dataTransfer.files; // FileList object.
-
+        var lastprogress = 0;
         for (var i = 0, f; f = files[i]; i++) {
 
             (function () {
@@ -68,17 +90,25 @@ $().ready(function () {
                     + '<div class="progress"></div>'
                     + '</li>');
 
-                $("#" + uid + ".progress").progressbar({ value: 0 });
+                $("#" + uid + ".progress").progressbar({ value: 50 });
 
                 progressiveRead(f,
                 function (data, pos, file) {
                     // Work
                     var progress = Math.floor((pos / file.size) * 100);
-                    $("#" + file.uid + " .progress").progressbar({ value: progress });
+                    if (progress > lastprogress) {
+                        $("#" + uid + " .progress").progressbar({ value: progress });
+                        lastprogress = progress;
+                    }
 
-                    if (doSHA1) sha1proc.update(data);
-                    if (doMD5) md5proc.update(data);
-                    if (doCRC32) crc32intermediate = crc32(data, crc32intermediate);
+                    if (doSHA1 || doMD5) {
+                        // Easiest way to get this up and running ;-) Obvious optimization potential there.
+                        var wordArray = arrayBufferToWordArray(data);
+                    }
+
+                    if (doSHA1) sha1proc.update(wordArray);
+                    if (doMD5) md5proc.update(wordArray);
+                    if (doCRC32) crc32intermediate = crc32(new Uint8Array(data), crc32intermediate);
                 },
                 function (file) {
                     // Done
