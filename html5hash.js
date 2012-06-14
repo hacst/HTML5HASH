@@ -90,7 +90,7 @@ $().ready(function () {
                     + '<div class="progress"></div>'
                     + '</li>');
 
-                $("#" + uid + ".progress").progressbar({ value: 50 });
+                $("#" + uid + ".progress").progressbar({ value: 0 });
 
                 progressiveRead(f,
                 function (data, pos, file) {
@@ -114,8 +114,8 @@ $().ready(function () {
                     // Done
                     var results = '';
 
-                    if (doSHA1) results += 'SHA1: ' + sha1proc.finalize() + '<br />';
-                    if (doMD5) results += 'MD5: ' + md5proc.finalize() + '<br />';
+                    if (doSHA1) results +=  'SHA1:   ' + sha1proc.finalize() + '<br />';
+                    if (doMD5) results +=   'MD5:    ' + md5proc.finalize() + '<br />';
                     if (doCRC32) results += 'CRC-32: ' + decimalToHexString(crc32intermediate) + '<br />';
                     
                     $("#" + uid).append(results);
