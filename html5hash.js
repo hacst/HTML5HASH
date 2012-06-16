@@ -13,6 +13,11 @@ $().ready(function () {
         return number.toString(16);
     }
 
+    function digits(number, dig) {
+        var shift = Math.pow(10, dig);
+        return Math.floor(number * shift) / shift;
+    }
+
     function progressiveRead(file, work, done) {
         var chunkSize = 20480; // 20KiB at a time
         var pos = 0;
@@ -46,35 +51,44 @@ $().ready(function () {
     };
 
     function arrayBufferToWordArray(arrayBuffer) {
-        var u8 = new Uint8Array(arrayBuffer);
-        var cp = []
-        for (var i = 0; i < 4 * Math.floor(u8.length / 4) ; i += 4) {
-            cp.push((u8[i] << 24) + (u8[i + 1] << 16) + (u8[i + 2] << 8) + u8[i + 3]);
+        var dv = new DataView(arrayBuffer);
+
+        var fullWords = Math.floor(dv.byteLength / 4);
+        var bytesLeft = dv.byteLength % 4;
+
+        var cp = [];
+        for (var i = 0; i < fullWords; ++i) {
+            cp.push(dv.getUint32(i * 4));
         }
 
-        if (u8.length % 4) {
+        if (bytesLeft) {
             var pad = 0;
-            for (var i = u8.length % 4; i > 0; --i) {
+            for (var i = bytesLeft; i > 0; --i) {
                 pad = pad << 8;
-                pad += u8[u8.length - i];
+                pad += dv.getUint8(dv.byteLength - i);
             }
-            for (var i = 0; i < 4 - (u8.length % 4) ; ++i) {
+
+            for (var i = 0; i < 4 - bytesLeft; ++i) {
                 pad = pad << 8;
             }
-            cp.push(pad)
+
+            cp.push(pad);
         }
 
-        return CryptoJS.lib.WordArray.create(cp, u8.length);
+        return CryptoJS.lib.WordArray.create(cp, dv.byteLength);
     };
 
     function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         var files = evt.dataTransfer.files; // FileList object.
-        var lastprogress = 0;
+
         for (var i = 0, f; f = files[i]; i++) {
 
             (function () {
+                var start = (new Date).getTime();
+                var lastprogress = 0;
+
                 var doSHA1 = $('[name="sha1switch"]').attr("checked") == "checked";
                 var doMD5 = $('[name="md5switch"]').attr("checked") == "checked";
                 var doCRC32 = $('[name="crc32switch"]').attr("checked") == "checked";
@@ -86,7 +100,7 @@ $().ready(function () {
                 var uid = "filehash" + getUnique();
 
                 $("#list").append('<li id="' + uid + '">'
-                    + '<b>' + escape(f.name) + '</b>'
+                    + '<b>' + escape(f.name) + ' <span class="progresstext"></span></b>'
                     + '<div class="progress"></div>'
                     + '</li>');
 
@@ -95,12 +109,6 @@ $().ready(function () {
                 progressiveRead(f,
                 function (data, pos, file) {
                     // Work
-                    var progress = Math.floor((pos / file.size) * 100);
-                    if (progress > lastprogress) {
-                        $("#" + uid + " .progress").progressbar({ value: progress });
-                        lastprogress = progress;
-                    }
-
                     if (doSHA1 || doMD5) {
                         // Easiest way to get this up and running ;-) Obvious optimization potential there.
                         var wordArray = arrayBufferToWordArray(data);
@@ -109,14 +117,36 @@ $().ready(function () {
                     if (doSHA1) sha1proc.update(wordArray);
                     if (doMD5) md5proc.update(wordArray);
                     if (doCRC32) crc32intermediate = crc32(new Uint8Array(data), crc32intermediate);
+
+                    // Update progress display
+                    var progress = Math.floor((pos / file.size) * 100);
+                    if (progress > lastprogress) {
+                        $("#" + uid + " .progress").progressbar({ value: progress });
+
+                        var sizeMB = file.size / 1024 / 1024;
+                        var posMB = pos / 1024 / 1024;
+
+                        var took = ((new Date).getTime() - start) / 1000;
+                        var rate = posMB / took;
+
+                        $("#" + uid + " .progresstext").html('('
+                            + digits(posMB, 2) + '/' + digits(sizeMB, 2) + ' MiB @ ' + digits(rate, 2) + ' MiB/s )');
+
+                        lastprogress = progress;
+                    }
                 },
                 function (file) {
                     // Done
+                    var took = ((new Date).getTime() - start) / 1000;
+                    var rate = ((file.size / 1024 / 1024) / took);
+
                     var results = '';
 
                     if (doSHA1) results +=  'SHA1:   ' + sha1proc.finalize() + '<br />';
                     if (doMD5) results +=   'MD5:    ' + md5proc.finalize() + '<br />';
                     if (doCRC32) results += 'CRC-32: ' + decimalToHexString(crc32intermediate) + '<br />';
+
+                    results += 'Time taken: ' + digits(took, 2) + 's @ ' + digits(rate, 2) + ' MiB/s<br />';
                     
                     $("#" + uid).append(results);
                 });
