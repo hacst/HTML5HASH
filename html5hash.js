@@ -51,21 +51,22 @@ $().ready(function () {
     };
 
     function arrayBufferToWordArray(arrayBuffer) {
-        var dv = new DataView(arrayBuffer);
+        var fullWords = Math.floor(arrayBuffer.byteLength / 4);
+        var bytesLeft = arrayBuffer.byteLength % 4;
 
-        var fullWords = Math.floor(dv.byteLength / 4);
-        var bytesLeft = dv.byteLength % 4;
+        var u32 = new Uint32Array(arrayBuffer, 0, fullWords);
+        var u8 = new Uint8Array(arrayBuffer);
 
         var cp = [];
         for (var i = 0; i < fullWords; ++i) {
-            cp.push(dv.getUint32(i * 4));
+            cp.push(u32[i]);
         }
 
         if (bytesLeft) {
             var pad = 0;
             for (var i = bytesLeft; i > 0; --i) {
                 pad = pad << 8;
-                pad += dv.getUint8(dv.byteLength - i);
+                pad += u8[u8.byteLength - i];
             }
 
             for (var i = 0; i < 4 - bytesLeft; ++i) {
@@ -75,7 +76,7 @@ $().ready(function () {
             cp.push(pad);
         }
 
-        return CryptoJS.lib.WordArray.create(cp, dv.byteLength);
+        return CryptoJS.lib.WordArray.create(cp, arrayBuffer.byteLength);
     };
 
     function handleFileSelect(evt) {
