@@ -1,6 +1,22 @@
 $().ready(function () {
     var uniquecnt = 0;
 
+    function isLittleEndian() {
+        var buf = new ArrayBuffer(4);
+        var data = new Uint32Array(buf);
+
+        // Determine whether Uint32 is little- or big-endian.
+        data[0] = 0x0a0b0c0d;
+
+        if (buf[0] === 0x0a && buf[1] === 0x0b && buf[2] === 0x0c &&  buf[3] === 0x0d) {
+            return false;
+        }
+
+        return true;
+    }
+
+    console.log(isLittleEndian());
+
     function getUnique() {
         return (uniquecnt++);
     }
@@ -50,6 +66,14 @@ $().ready(function () {
         setTimeout(progressiveReadNext, 0);
     };
 
+    function swapendian32(val) {
+        return (((val & 0xFF) << 24)
+           | ((val & 0xFF00) << 8)
+           | ((val >> 8) & 0xFF00)
+           | ((val >> 24) & 0xFF)) >>> 0;
+
+    }
+ 
     function arrayBufferToWordArray(arrayBuffer) {
         var fullWords = Math.floor(arrayBuffer.byteLength / 4);
         var bytesLeft = arrayBuffer.byteLength % 4;
@@ -59,7 +83,7 @@ $().ready(function () {
 
         var cp = [];
         for (var i = 0; i < fullWords; ++i) {
-            cp.push(u32[i]);
+            cp.push(swapendian32(u32[i]));
         }
 
         if (bytesLeft) {
