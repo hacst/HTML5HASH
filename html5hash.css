@@ -1,10 +1,62 @@
-div#drop_zone {
+div#placeholder {
     text-align: center;
     border: 1px dashed black;
     width: auto;
-    height: 50px;
+    height: 2em;
+}
+
+header {
+    margin-bottom: 1em;
+    overflow: hidden;
+}
+
+header fieldset {
+    border-radius: 6px;
+    display: table-cell;
+    float: left;
+}
+
+
+header h1 {
+    font-style: normal;
+    text-align: center;
+    margin: 0px;
+    float: right;
 }
 
 ul#list {
     list-style: none;
+    padding-left: 0em;
+}
+
+ul#list li {
+    border:  1px solid #d6d6d6;
+    border-radius: 6px;
+    margin: 0.4em;
+    padding: 0.3em;
+}
+
+body {
+    background: #ebebeb;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+
+div#centerfield {
+    border: 1px solid #808080;
+    width: 80%;
+    min-height: 30em;
+    min-width: 30em;
+    
+    background-color: #ffffff;
+    margin: auto;
+    margin-top: 2em;
+    padding: 1%;
+
+    border-radius: 6px;
+}
+
+footer {
+    font-size: 0.9em;
+    color: #808080;
+    text-align: center;
 }

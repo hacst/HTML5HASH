@@ -105,7 +105,7 @@ $().ready(function () {
                     + '<div class="progress"></div>'
                     + '</li>');
 
-                $("#" + uid + ".progress").progressbar({ value: 0 });
+                $("#" + uid + " .progress").progressbar({ value: 0 });
 
                 progressiveRead(f,
                 function (data, pos, file) {
@@ -162,8 +162,44 @@ $().ready(function () {
         evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     }
 
+    function debuggingstubstuff() {
+        // Dummy testing content
+        var uid = "filehash" + getUnique();
+
+        $("#list").append('<li id="' + uid + '">'
+                    + '<b>' + 'Just testin.html' + ' <span class="progresstext"></span></b>'
+                    + '<div class="progress"></div>'
+                    + '</li>');
+
+        $("#" + uid + " .progress").progressbar({ value: 20 });
+
+        // Dummy testing content
+        var uid = "filehash" + getUnique();
+
+        $("#list").append('<li id="' + uid + '">'
+                    + '<b>' + 'Just testin2.html' + ' <span class="progresstext"></span></b>'
+                    + '<div class="progress"></div>'
+                    + '</li>');
+
+        $("#" + uid + " .progress").progressbar({ value: 50 });
+
+        // Dummy testing content
+        var uid = "filehash" + getUnique();
+
+        $("#list").append('<li id="' + uid + '">'
+                    + '<b>' + 'Just testin3.html' + ' <span class="progresstext"></span></b>'
+                    + '<div class="progress"></div>'
+                    + '</li>');
+
+        $("#" + uid + " .progress").progressbar({ value: 90 });
+    };
+
+
     // Setup the dnd listeners.
     var dropZone = document.getElementById('drop_zone');
     dropZone.addEventListener('dragover', handleDragOver, false);
     dropZone.addEventListener('drop', handleFileSelect, false);
+
+    //debuggingstubstuff();
+
 });

@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
 
-    <title>html5hash</title>
+    <title>HTML5HASH</title>
     
     <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.21.custom.css" rel="stylesheet" />
     <link type="text/css" href="html5hash.css" rel="stylesheet" />
@@ -15,19 +15,35 @@
 	<script type="text/javascript" src="js/jquery-ui-1.8.21.custom.min.js"></script>
     <script type="text/javascript" src="html5hash.js"></script>
 </head>
-<body>
-<h1>html5hash</h1>
-<div id="drop_zone">Drop files here</div>
+<body id="drop_zone">
 
-<fieldset id="algo_selection">
-    <legend>Algorithm selection</legend>
-    <form>
-        <input type="checkbox" name="sha1switch" />SHA1
-        <input type="checkbox" name="md5switch" />MD5
-        <input type="checkbox" name="crc32switch" checked="checked" />CRC-32
-    </form>
-</fieldset>
-<pre id="list"></pre>
+    <div id="centerfield">
+
+    <header>
+        <fieldset id="algo_selection">
+            <legend>Algorithm selection</legend>
+            <form>
+                <input type="checkbox" name="sha1switch" />SHA1
+                <input type="checkbox" name="md5switch" />MD5
+                <input type="checkbox" name="crc32switch" checked="checked" />CRC-32
+            </form>
+        </fieldset>
+        
+        <h1>HTML5HASH</h1>
+    </header>
+    <article>
+
+        <ul id="list">
+            <li>
+                <b>File selection</b>
+                <div id="placeholder">Drop files here</div>
+            </li>
+        </ul>
+    </article>
+    </div>
+    <footer>
+        Copyright © 2012 Stefan Hacker
+    </footer>
 
 </body>
 </html>
