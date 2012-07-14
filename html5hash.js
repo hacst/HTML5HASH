@@ -74,6 +74,32 @@ $().ready(function () {
         return CryptoJS.lib.WordArray.create(cp, arrayBuffer.byteLength);
     };
 
+    function bytes2si(bytes, outputdigits) {
+        if (bytes < 1024) { // Bytes
+            return digits(bytes, outputdigits) + " b";
+        }
+        else if (bytes < 1048576) { // KiB
+            return digits(bytes / 1024, outputdigits) + " KiB";
+        }
+        
+        return digits(bytes / 1048576, outputdigits) + " MiB";
+    }
+
+    function bytes2si2(bytes1, bytes2, outputdigits) {
+        var big = Math.max(bytes1, bytes2);
+
+        if (big < 1024) { // Bytes
+            return bytes1 + "/" + bytes2 + " b";
+        }
+        else if (big < 1048576) { // KiB
+            return digits(bytes1 / 1024, outputdigits) + "/" +
+                digits(bytes2 / 1024, outputdigits) + " KiB";
+        }
+
+        return digits(bytes1 / 1048576, outputdigits) + "/" +
+            digits(bytes2 / 1048576, outputdigits) + " MiB";
+    }
+
     function progressiveRead(file, work, done) {
         var chunkSize = 20480; // 20KiB at a time
         var pos = 0;
@@ -151,22 +177,17 @@ $().ready(function () {
                     if (progress > lastprogress) {
                         $("#" + uid + " .progress").progressbar({ value: progress });
 
-                        var sizeMB = file.size / 1024 / 1024;
-                        var posMB = pos / 1024 / 1024;
-
                         var took = ((new Date).getTime() - start) / 1000;
-                        var rate = posMB / took;
 
                         $("#" + uid + " .progresstext").html('('
-                            + digits(posMB, 2) + '/' + digits(sizeMB, 2) + ' MiB @ ' + digits(rate, 2) + ' MiB/s )');
-
+                            + bytes2si2(pos, file.size, 2) + ' @ ' + bytes2si(pos / took, 2) + '/s )');
+                        
                         lastprogress = progress;
                     }
                 },
                 function (file) {
                     // Done
                     var took = ((new Date).getTime() - start) / 1000;
-                    var rate = ((file.size / 1024 / 1024) / took);
 
                     var results = '<table class="mono">';
 
@@ -176,7 +197,7 @@ $().ready(function () {
 
                     results += '</table>';
 
-                    results += 'Time taken: ' + digits(took, 2) + 's @ ' + digits(rate, 2) + ' MiB/s<br />';
+                    results += 'Time taken: ' + digits(took, 2) + 's @ ' + bytes2si(file.size / took, 2) + '/s<br />';
                     
                     $("#" + uid).append(results);
                 });
