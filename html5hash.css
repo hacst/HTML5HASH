@@ -2,8 +2,7 @@ div#placeholder {
     text-align: center;
     border: 1px dashed black;
     width: auto;
-    height: 2em;
-    line-height: 2em;
+    padding: 0.5em;
     cursor: pointer;
 }
 header {
@@ -11,7 +10,7 @@ header {
     overflow: hidden;
 }
 
-header fieldset {
+#algo_selection {
     border-radius: 6px;
     display: table-cell;
     float: left;
