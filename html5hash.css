@@ -59,3 +59,11 @@ footer {
     color: #808080;
     text-align: center;
 }
+
+.mono {
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+}
+
+.progresstext {
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+}

@@ -1,25 +1,20 @@
 $().ready(function () {
-    var uniquecnt = 0;
 
-    function isLittleEndian() {
-        var buf = new ArrayBuffer(4);
-        var data = new Uint32Array(buf);
 
-        // Determine whether Uint32 is little- or big-endian.
-        data[0] = 0x0a0b0c0d;
+    /*
+     * Helpers one wouldn't if JS didn't suck...
+     */
 
-        if (buf[0] === 0x0a && buf[1] === 0x0b && buf[2] === 0x0c &&  buf[3] === 0x0d) {
-            return false;
+
+    getUnique = function () {
+        var uniquecnt = 0;
+
+        function getUnique() {
+            return (uniquecnt++);
         }
 
-        return true;
-    }
-
-    console.log(isLittleEndian());
-
-    function getUnique() {
-        return (uniquecnt++);
-    }
+        return getUnique;
+    }();
 
     function decimalToHexString(number) {
         if (number < 0) {
@@ -33,6 +28,51 @@ $().ready(function () {
         var shift = Math.pow(10, dig);
         return Math.floor(number * shift) / shift;
     }
+
+    function escapeHtml(text) {
+        return $('<div/>').text(text).html();
+    }
+
+    function swapendian32(val) {
+        return (((val & 0xFF) << 24)
+           | ((val & 0xFF00) << 8)
+           | ((val >> 8) & 0xFF00)
+           | ((val >> 24) & 0xFF)) >>> 0;
+
+    }
+
+    /*
+     * Horribly inefficient but unless I find another library or
+     * (re)write stuff this is the way that just makes it work (TM).
+     */
+    function arrayBufferToWordArray(arrayBuffer) {
+        var fullWords = Math.floor(arrayBuffer.byteLength / 4);
+        var bytesLeft = arrayBuffer.byteLength % 4;
+
+        var u32 = new Uint32Array(arrayBuffer, 0, fullWords);
+        var u8 = new Uint8Array(arrayBuffer);
+
+        var cp = [];
+        for (var i = 0; i < fullWords; ++i) {
+            cp.push(swapendian32(u32[i]));
+        }
+
+        if (bytesLeft) {
+            var pad = 0;
+            for (var i = bytesLeft; i > 0; --i) {
+                pad = pad << 8;
+                pad += u8[u8.byteLength - i];
+            }
+
+            for (var i = 0; i < 4 - bytesLeft; ++i) {
+                pad = pad << 8;
+            }
+
+            cp.push(pad);
+        }
+
+        return CryptoJS.lib.WordArray.create(cp, arrayBuffer.byteLength);
+    };
 
     function progressiveRead(file, work, done) {
         var chunkSize = 20480; // 20KiB at a time
@@ -66,43 +106,6 @@ $().ready(function () {
         setTimeout(progressiveReadNext, 0);
     };
 
-    function swapendian32(val) {
-        return (((val & 0xFF) << 24)
-           | ((val & 0xFF00) << 8)
-           | ((val >> 8) & 0xFF00)
-           | ((val >> 24) & 0xFF)) >>> 0;
-
-    }
- 
-    function arrayBufferToWordArray(arrayBuffer) {
-        var fullWords = Math.floor(arrayBuffer.byteLength / 4);
-        var bytesLeft = arrayBuffer.byteLength % 4;
-
-        var u32 = new Uint32Array(arrayBuffer, 0, fullWords);
-        var u8 = new Uint8Array(arrayBuffer);
-
-        var cp = [];
-        for (var i = 0; i < fullWords; ++i) {
-            cp.push(swapendian32(u32[i]));
-        }
-
-        if (bytesLeft) {
-            var pad = 0;
-            for (var i = bytesLeft; i > 0; --i) {
-                pad = pad << 8;
-                pad += u8[u8.byteLength - i];
-            }
-
-            for (var i = 0; i < 4 - bytesLeft; ++i) {
-                pad = pad << 8;
-            }
-
-            cp.push(pad);
-        }
-
-        return CryptoJS.lib.WordArray.create(cp, arrayBuffer.byteLength);
-    };
-
     function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
@@ -125,7 +128,7 @@ $().ready(function () {
                 var uid = "filehash" + getUnique();
 
                 $("#list").append('<li id="' + uid + '">'
-                    + '<b>' + escape(f.name) + ' <span class="progresstext"></span></b>'
+                    + '<b>' + escapeHtml(f.name) + ' <span class="progresstext"></span></b>'
                     + '<div class="progress"></div>'
                     + '</li>');
 
@@ -165,11 +168,13 @@ $().ready(function () {
                     var took = ((new Date).getTime() - start) / 1000;
                     var rate = ((file.size / 1024 / 1024) / took);
 
-                    var results = '';
+                    var results = '<table class="mono">';
 
-                    if (doSHA1) results +=  'SHA1:   ' + sha1proc.finalize() + '<br />';
-                    if (doMD5) results +=   'MD5:    ' + md5proc.finalize() + '<br />';
-                    if (doCRC32) results += 'CRC-32: ' + decimalToHexString(crc32intermediate) + '<br />';
+                    if (doSHA1) results +=  '<tr><td>SHA1:</td><td>' + sha1proc.finalize() + '</td></tr>';
+                    if (doMD5) results +=   '<tr><td>MD5:</td><td>' + md5proc.finalize() + '</td></tr>';
+                    if (doCRC32) results += '<tr><td>CRC-32:</td><td>' + decimalToHexString(crc32intermediate) + '</td></tr>';
+
+                    results += '</table>';
 
                     results += 'Time taken: ' + digits(took, 2) + 's @ ' + digits(rate, 2) + ' MiB/s<br />';
                     
