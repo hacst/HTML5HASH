@@ -3,8 +3,9 @@ div#placeholder {
     border: 1px dashed black;
     width: auto;
     height: 2em;
+    line-height: 2em;
+    cursor: pointer;
 }
-
 header {
     margin-bottom: 1em;
     overflow: hidden;
@@ -74,4 +75,8 @@ footer {
 
 .progresstext {
     font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+}
+
+input#hiddenFilesSelector {
+    display:  none;
 }

@@ -135,7 +135,12 @@ $().ready(function () {
     function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
-        var files = evt.dataTransfer.files; // FileList object.
+        if (evt.target.files) {
+            var files = evt.target.files;
+        }
+        else {
+            var files = evt.dataTransfer.files; // FileList object.
+        }
 
         for (var i = 0, f; f = files[i]; i++) {
 
@@ -212,9 +217,19 @@ $().ready(function () {
         evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     }
 
+    function triggerFileSelection(node) {
+            $("#hiddenFilesSelector").click();
+    }
+
     // Setup the dnd listeners.
     var dropZone = document.getElementById('drop_zone');
     dropZone.addEventListener('dragover', handleDragOver, false);
     dropZone.addEventListener('drop', handleFileSelect, false);
+
+    // Setup browse listener
+    var fileSelector = document.getElementById('hiddenFilesSelector');
+    fileSelector.addEventListener('change', handleFileSelect, false);
+
+    $("#placeholder").click(triggerFileSelection);
 
 });
