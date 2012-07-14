@@ -19,28 +19,32 @@
 
     <div id="centerfield">
 
-    <header>
-        <fieldset id="algo_selection">
-            <legend>Algorithm selection</legend>
-            <form>
-                <input type="checkbox" name="sha1switch" />SHA1
-                <input type="checkbox" name="md5switch" />MD5
-                <input type="checkbox" name="crc32switch" checked="checked" />CRC-32
-            </form>
-        </fieldset>
+        <header>
+            <fieldset id="algo_selection">
+                <legend>Algorithm selection</legend>
+                <form>
+                    <input type="checkbox" name="sha1switch" />SHA1
+                    <input type="checkbox" name="md5switch" />MD5
+                    <input type="checkbox" name="crc32switch" checked="checked" />CRC-32
+                </form>
+            </fieldset>
         
-        <h1>HTML5HASH</h1>
-    </header>
+            <h1>HTML5HASH</h1>
+        </header>
 
-    <article>
+        <article>
+            <ul id="list">
+                <li>
+                    <b>File selection</b>
+                    <div id="placeholder">Drop files here</div>
+                </li>
+            </ul>
+        </article>
 
-        <ul id="list">
-            <li>
-                <b>File selection</b>
-                <div id="placeholder">Drop files here</div>
-            </li>
-        </ul>
-    </article>
+        <aside id="explanation">
+            Hashes are computed locally. No files or information on files will be uploaded.
+        </aside>
+
     </div>
 
     <footer>

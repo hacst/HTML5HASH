@@ -54,6 +54,14 @@ div#centerfield {
     border-radius: 6px;
 }
 
+aside#explanation {
+    border:  1px solid #d6d6d6;
+    border-radius: 6px;
+    margin: 0.4em;
+    padding: 0.3em;
+    text-align: center;
+}
+
 footer {
     font-size: 0.9em;
     color: #808080;
