@@ -23,6 +23,15 @@ header h1 {
     float: right;
 }
 
+#social {
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+}
+
+
+
+
 ul#list {
     list-style: none;
     padding-left: 0em;
@@ -78,4 +87,54 @@ footer {
 
 input#hiddenFilesSelector {
     display:  none;
+}
+
+#overlay {
+    position: absolute;
+    
+    background: black;
+    opacity: 0.8;
+    z-index: 1;
+    float: page;
+    top: 0px;
+    left: 0px;
+    
+    width: 100%;
+    height: 100%;
+}
+
+#overlaytextbox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: auto;
+    background: white;
+    width: 20em;
+    height: 20em;
+    margin-left: -10em;
+    margin-top: -10em;
+    padding: 1em;
+    z-index: 2;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.browserad {
+    display: block;
+    margin: 1em;
+}
+
+#overlaytextbox h3 {
+    margin: 0px;
+    padding: 0px;
+    text-align: center;
+}
+
+#browserads {
+    text-align: center;
+}
+
+.browserad a img {
+    margin: 0.1em;
+    border: none;
 }

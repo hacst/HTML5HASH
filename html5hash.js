@@ -221,6 +221,35 @@ $().ready(function () {
             $("#hiddenFilesSelector").click();
     }
 
+    function compatible() {
+        // Check for FileApi
+        if (typeof FileReader == "undefined") return false;
+
+        // Check for Blob and slice api
+        if (typeof Blob == "undefined") return false;
+        var blob = new Blob();
+        if (!blob.slice && !blob.webkitSlice) return false;
+
+        // Check for Drag-and-drop
+        if (!('draggable' in document.createElement('span'))) return false;
+
+        return true;
+    }
+
+    (function () {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+
+    if (!compatible()) {
+        return; // Nevermind initialising the handlers
+    }
+
+    // Hide incompatibility warning
+    $("#overlay").hide();
+    $("#overlaytextbox").hide();
+
     // Setup the dnd listeners.
     var dropZone = document.getElementById('drop_zone');
     dropZone.addEventListener('dragover', handleDragOver, false);
