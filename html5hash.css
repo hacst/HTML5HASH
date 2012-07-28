@@ -91,11 +91,9 @@ input#hiddenFilesSelector {
 
 #overlay {
     position: absolute;
-    
     background: black;
     opacity: 0.8;
     z-index: 1;
-    float: page;
     top: 0px;
     left: 0px;
     

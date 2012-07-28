@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html itemscope itemtype="http://schema.org/Product">
+<html itemscope itemtype="http://schema.org/WebApplication">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
-    <meta itemprop="name" content="HTML5HASH">
-    <meta itemprop="description" content="A tool that uses HTML5 features to provide file hashing with crc32, md5 and sha1 without the need to upload anything.">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta itemprop="name" content="HTML5HASH" />
+    <meta itemprop="description" content="A tool that uses HTML5 features to provide file hashing with crc32, md5 and sha1 without the need to upload anything." />
+    <!-- Does anyone parse these? Maybe for future crawlers ;-) -->
+    <meta itemprop="author" content="Stefan Hacker" />
+    <meta itemprop="applicationCategory" content="Tool" />
+    <meta itemprop="applicationSubCategory" content="Hashing tool" />
+    <meta itemprop="browserRequirements" content="HTML5 support including FileReader(), Blob() with slices as well as Drag & Drop" />
 
     <title>HTML5HASH</title>
     
@@ -18,8 +23,8 @@
     <script type="text/javascript" src="html5hash.js"></script>
 
 </head>
-<body id="drop_zone">
 
+<body id="drop_zone">
 
     <div id="overlay">
 
@@ -45,7 +50,6 @@
                     </a>
             </div>
         </div>
-
     </div>
 
     <div id="social">
