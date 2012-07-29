@@ -10,7 +10,7 @@
     <meta itemprop="applicationSubCategory" content="Hashing tool" />
     <meta itemprop="browserRequirements" content="HTML5 support including FileReader(), Blob() with slices as well as Drag & Drop" />
 
-    <title>HTML5HASH</title>
+    <title>HTML5HASH, hashing files in your browser</title>
     
     <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.22.custom.css" rel="stylesheet" />
     <link type="text/css" href="html5hash.css" rel="stylesheet" />
@@ -39,23 +39,6 @@
 </head>
 
 <body id="drop_zone">
-
-    <div id="overlay">
-
-    </div>
-
-    <!-- Work around opacity inheritance by having this seperate. -->
-
-    <div id="overlaytextbox">
-        <h3>Sorry</h3><br />
-        <div id="nojavascript">This site requires <a href="http://www.enable-javascript.com/" target="_blank">JavaScript</a>.</div>
-        <div id="missingfeatures"></div>
-    </div>
-
-    <div id="social">
-        <div class="g-plusone" data-size="small"></div>
-    </div>
-
     <div id="centerfield">
 
         <header>
@@ -85,7 +68,7 @@
         </article>
 
         <aside id="explanation">
-            Hashes are computed locally. No files or information on files will be uploaded.
+            <span itemprop="description">Hashes are computed locally. No files or information on files will be uploaded.</span>
         </aside>
 
     </div>
@@ -93,6 +76,23 @@
     <footer>
         Copyright © 2012 Stefan Hacker
     </footer>
+
+
+    <div id="overlay">
+
+    </div>
+
+    <!-- Work around opacity inheritance by having this seperate. -->
+
+    <div id="overlaytextbox">
+        <h3>Sorry</h3><br />
+        <div id="nojavascript">This site requires <a href="http://www.enable-javascript.com/" target="_blank">JavaScript</a>.</div>
+        <div id="missingfeatures"></div>
+    </div>
+
+    <div id="social">
+        <div class="g-plusone" data-size="small"></div>
+    </div>
 
 </body>
 </html>

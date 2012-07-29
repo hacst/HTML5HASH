@@ -247,6 +247,16 @@ $().ready(function () {
 
     if (!compatible()) {
         $("#nojavascript").hide();
+
+        // Fade in incompatibility note
+        $("#overlay")
+            .css('opacity', 0)
+            .animate({ opacity: 0.8 }, 2000)
+
+        $("#overlaytextbox")
+            .css('opacity', 0)
+            .animate({ opacity: 1.0 }, 2000)
+
         $("#missingfeatures").html(
         "HTML5HASH does not work with this browser. Consider using one of these: \
             <div id=\"browserads\"> \
