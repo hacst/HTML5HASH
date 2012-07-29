@@ -222,17 +222,20 @@ $().ready(function () {
     }
 
     function compatible() {
-        // Check for FileApi
-        if (typeof FileReader == "undefined") return false;
+        try {
+            // Check for FileApi
+            if (typeof FileReader == "undefined") return false;
 
-        // Check for Blob and slice api
-        if (typeof Blob == "undefined") return false;
-        var blob = new Blob();
-        if (!blob.slice && !blob.webkitSlice) return false;
+            // Check for Blob and slice api
+            if (typeof Blob == "undefined") return false;
+            var blob = new Blob();
+            if (!blob.slice && !blob.webkitSlice) return false;
 
-        // Check for Drag-and-drop
-        if (!('draggable' in document.createElement('span'))) return false;
-
+            // Check for Drag-and-drop
+            if (!('draggable' in document.createElement('span'))) return false;
+        } catch (e) {
+            return false;
+        }
         return true;
     }
 
@@ -243,6 +246,22 @@ $().ready(function () {
     })();
 
     if (!compatible()) {
+        $("#nojavascript").hide();
+        $("#missingfeatures").html(
+        "HTML5HASH does not work with this browser. Consider using one of these: \
+            <div id=\"browserads\"> \
+            <div class=\"browserad\"> \
+                    <a href=\"http://affiliates.mozilla.org/link/banner/21269\"> \
+                        <img src=\"http://affiliates.mozilla.org/media/uploads/banners/f5eeeddc214ed8ef15e48bc80e1f53b0da4f0574.png\" alt=\"Download: Fast, Fun, Awesome\" /> \
+                    </a> \
+            </div> \
+            <div class=\"browserad\"> \
+                    <a href=\"http://www.google.com/chrome/\"> \
+                        <img src=\"img/chrome_logo.png\" alt=\"Google Chrome\" /> \
+                    </a> \
+            </div> \
+        </div>");
+
         return; // Nevermind initialising the handlers
     }
 
