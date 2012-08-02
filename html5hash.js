@@ -163,8 +163,6 @@ $().ready(function () {
                     + '<div class="progress"></div>'
                     + '</li>');
 
-                $("#" + uid + " .progress").progressbar({ value: 0 });
-
                 progressiveRead(f,
                 function (data, pos, file) {
                     // Work
@@ -180,9 +178,10 @@ $().ready(function () {
                     // Update progress display
                     var progress = Math.floor((pos / file.size) * 100);
                     if (progress > lastprogress) {
-                        $("#" + uid + " .progress").progressbar({ value: progress });
-
                         var took = ((new Date).getTime() - start) / 1000;
+
+                        if (took > 0.1) // Only show progressbar after 100ms so it won't show for very small files
+                            $("#" + uid + " .progress").progressbar({ value: progress });
 
                         $("#" + uid + " .progresstext").html('('
                             + bytes2si2(pos, file.size, 2) + ' @ ' + bytes2si(pos / took, 2) + '/s )');
