@@ -77,8 +77,23 @@ footer {
     text-align: center;
 }
 
-.mono {
-    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+.entrystyle {
+    background-color: #FFFFF0;
+}
+
+.resultdiv {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    padding: 0.5em;
+    border-top: 1px solid #d6d6d6;
+    border-bottom: 1px solid #d6d6d6;
+    width: fill-available;
+    background-color: white;
+    font-family: "Lucida Console", "Lucida Sans Typewriter", Monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
+.resulttaken {
+    font-size: small;
 }
 
 .progresstext {

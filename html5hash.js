@@ -158,7 +158,7 @@ $().ready(function () {
 
                 var uid = "filehash" + getUnique();
 
-                $("#list").append('<li id="' + uid + '">'
+                $("#list").append('<li id="' + uid + '" class="entrystyle">'
                     + '<b>' + escapeHtml(f.name) + ' <span class="progresstext"></span></b>'
                     + '<div class="progress"></div>'
                     + '</li>');
@@ -194,17 +194,23 @@ $().ready(function () {
                     // Done
                     var took = ((new Date).getTime() - start) / 1000;
 
-                    var results = '<table class="mono">';
+                    var results = '<div class="resultdiv"><table>';
 
                     if (doSHA1) results +=  '<tr><td>SHA1:</td><td>' + sha1proc.finalize() + '</td></tr>';
                     if (doMD5) results +=   '<tr><td>MD5:</td><td>' + md5proc.finalize() + '</td></tr>';
                     if (doCRC32) results += '<tr><td>CRC-32:</td><td>' + decimalToHexString(crc32intermediate) + '</td></tr>';
 
-                    results += '</table>';
+                    results += '</table></div>';
 
-                    results += 'Time taken: ' + digits(took, 2) + 's @ ' + bytes2si(file.size / took, 2) + '/s<br />';
+                    results += '<span class="resulttaken">Time taken: ' + digits(took, 2) + 's @ ' + bytes2si(file.size / took, 2) + '/s</span><br />';
                     
                     $("#" + uid).append(results);
+
+                    $("#" + uid + " .progress")
+                        .hide('slow');
+
+                    $("#" + uid)
+                        .css('background-color', '#F0FFF0');
                 });
             })();
         };
