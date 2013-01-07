@@ -1,10 +1,8 @@
 $().ready(function () {
 
-
     /*
-     * Helpers one wouldn't need if JS didn't suck...
+     * Helpers
      */
-
 
     getUnique = function () {
         var uniquecnt = 0;
@@ -44,6 +42,10 @@ $().ready(function () {
     /*
      * Horribly inefficient but unless I find another library or
      * (re)write stuff this is the way that just makes it work (TM).
+     *
+     * Note: Since CryptoJS 3.1 this functionality is in the framework.
+     *       However it's currently slower than this juding from my tests.
+     *       See CryptoJS components/lib-typedarrays.js
      */
     function arrayBufferToWordArray(arrayBuffer) {
         var fullWords = Math.floor(arrayBuffer.byteLength / 4);
