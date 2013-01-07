@@ -2,8 +2,9 @@ $().ready(function () {
 
 
     /*
-     * Helpers
+     * Helpers one wouldn't need if JS didn't suck...
      */
+
 
     getUnique = function () {
         var uniquecnt = 0;
@@ -39,6 +40,39 @@ $().ready(function () {
            | ((val >> 24) & 0xFF)) >>> 0;
 
     }
+
+    /*
+     * Horribly inefficient but unless I find another library or
+     * (re)write stuff this is the way that just makes it work (TM).
+     */
+    function arrayBufferToWordArray(arrayBuffer) {
+        var fullWords = Math.floor(arrayBuffer.byteLength / 4);
+        var bytesLeft = arrayBuffer.byteLength % 4;
+
+        var u32 = new Uint32Array(arrayBuffer, 0, fullWords);
+        var u8 = new Uint8Array(arrayBuffer);
+
+        var cp = [];
+        for (var i = 0; i < fullWords; ++i) {
+            cp.push(swapendian32(u32[i]));
+        }
+
+        if (bytesLeft) {
+            var pad = 0;
+            for (var i = bytesLeft; i > 0; --i) {
+                pad = pad << 8;
+                pad += u8[u8.byteLength - i];
+            }
+
+            for (var i = 0; i < 4 - bytesLeft; ++i) {
+                pad = pad << 8;
+            }
+
+            cp.push(pad);
+        }
+
+        return CryptoJS.lib.WordArray.create(cp, arrayBuffer.byteLength);
+    };
 
     function bytes2si(bytes, outputdigits) {
         if (bytes < 1024) { // Bytes
@@ -134,7 +168,7 @@ $().ready(function () {
                     // Work
                     if (doSHA1 || doMD5) {
                         // Easiest way to get this up and running ;-) Obvious optimization potential there.
-                        var wordArray = CryptoJS.lib.WordArray.create(data, data.byteLength);
+                        var wordArray = arrayBufferToWordArray(data);
                     }
 
                     if (doSHA1) sha1proc.update(wordArray);
