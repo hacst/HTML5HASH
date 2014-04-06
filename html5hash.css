@@ -87,13 +87,21 @@ footer {
     padding: 0.5em;
     border-top: 1px solid #d6d6d6;
     border-bottom: 1px solid #d6d6d6;
-    width: fill-available;
     background-color: white;
     font-family: "Lucida Console", "Lucida Sans Typewriter", Monaco, "Bitstream Vera Sans Mono", monospace;
 }
 
 .resulttaken {
     font-size: small;
+}
+
+.algoname {
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.algoresult {
+    word-break: break-all;
 }
 
 .progresstext {
@@ -130,6 +138,14 @@ input#hiddenFilesSelector {
     z-index: 2;
     border-radius: 6px;
     text-align: center;
+}
+
+#algoshide {
+    text-align: right;
+}
+
+#algosshow {
+    padding-left: 1em;
 }
 
 .browserad {

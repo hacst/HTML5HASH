@@ -134,6 +134,23 @@ $().ready(function () {
         setTimeout(progressiveReadNext, 0);
     };
 
+    // List all CryptoJS based supported algorithms so we can handle them
+    // in one codepath. We could also use this to dynamically add these
+    // options to the UI but this might prevent search engines from properly
+    // picking them up.
+
+    var algorithms = [
+        { name: "MD5", type: CryptoJS.algo.MD5 },
+        { name: "SHA1", type: CryptoJS.algo.SHA1 },
+        { name: "SHA256",  type: CryptoJS.algo.SHA256 },
+        { name: "SHA512",  type: CryptoJS.algo.SHA512 },
+        { name: "SHA3-224",  type: CryptoJS.algo.SHA3, param: { outputLength: 224 } },
+        { name: "SHA3-256",  type: CryptoJS.algo.SHA3, param: { outputLength: 256 } },
+        { name: "SHA3-384",  type: CryptoJS.algo.SHA3, param: { outputLength: 384 } },
+        { name: "SHA3-512",  type: CryptoJS.algo.SHA3, param: { outputLength: 512 } },
+        { name: "RIPEMD-160", type: CryptoJS.algo.RIPEMD160 }
+    ];
+
     function handleFileSelect(evt) {
         evt.stopPropagation();
         evt.preventDefault();
@@ -150,12 +167,19 @@ $().ready(function () {
                 var start = (new Date).getTime();
                 var lastprogress = 0;
 
-                var doSHA1 = $('[name="sha1switch"]').attr("checked") == "checked";
-                var doMD5 = $('[name="md5switch"]').attr("checked") == "checked";
+                var enabledAlgorithms = [];
+                for (var j = 0; j < algorithms.length; j++) {
+                    var current = algorithms[j];
+                    if ($('[name="' + current.name + '-switch"]').attr("checked") == "checked") {
+                        // Param will not exist for some but that's ok
+                        var algoInst = { name: current.name, instance: current.type.create(current.param) };
+                        enabledAlgorithms.push(algoInst);
+                    }
+                }
+
+                // Special case CRC32 as it's not part of CryptoJS and takes another input format.
                 var doCRC32 = $('[name="crc32switch"]').attr("checked") == "checked";
 
-                if (doSHA1) var sha1proc = CryptoJS.algo.SHA1.create();
-                if (doMD5) var md5proc = CryptoJS.algo.MD5.create();
                 if (doCRC32) var crc32intermediate = 0;
 
                 var uid = "filehash" + getUnique();
@@ -168,13 +192,15 @@ $().ready(function () {
                 progressiveRead(f,
                 function (data, pos, file) {
                     // Work
-                    if (doSHA1 || doMD5) {
+                    if (enabledAlgorithms.length > 0) {
                         // Easiest way to get this up and running ;-) Obvious optimization potential there.
                         var wordArray = arrayBufferToWordArray(data);
                     }
 
-                    if (doSHA1) sha1proc.update(wordArray);
-                    if (doMD5) md5proc.update(wordArray);
+                    for (var j = 0; j < enabledAlgorithms.length ; j++) {
+                        enabledAlgorithms[j].instance.update(wordArray);
+                    }
+
                     if (doCRC32) crc32intermediate = crc32(new Uint8Array(data), crc32intermediate);
 
                     // Update progress display
@@ -197,9 +223,11 @@ $().ready(function () {
 
                     var results = '<div class="resultdiv"><table>';
 
-                    if (doSHA1) results +=  '<tr><td>SHA1:</td><td>' + sha1proc.finalize() + '</td></tr>';
-                    if (doMD5) results +=   '<tr><td>MD5:</td><td>' + md5proc.finalize() + '</td></tr>';
                     if (doCRC32) results += '<tr><td>CRC-32:</td><td>' + decimalToHexString(crc32intermediate) + '</td></tr>';
+
+                    for (var j = 0; j < enabledAlgorithms.length ; j++) {
+                        results += '<tr><td class="algoname">' + enabledAlgorithms[j].name + ':</td><td class="algoresult">' + enabledAlgorithms[j].instance.finalize() + '</td></tr>';
+                    }
 
                     results += '</table></div>';
 
@@ -286,6 +314,9 @@ $().ready(function () {
     $("#overlay").hide();
     $("#overlaytextbox").hide();
 
+    // Hide the additional algorithms
+    $(".additionalalgos").hide();
+
     // Setup the dnd listeners.
     var dropZone = document.getElementById('drop_zone');
     dropZone.addEventListener('dragover', handleDragOver, false);
@@ -296,5 +327,17 @@ $().ready(function () {
     fileSelector.addEventListener('change', handleFileSelect, false);
 
     $("#placeholder").click(triggerFileSelection);
+
+    // Setup more/less buttons for hiding showing additional algorithm options
+    var algoshidden = true;
+    $("#algosshow").click(function (node) {
+        $(".additionalalgos").show();
+        $("#algosshow").hide();
+    });
+
+    $("#algoshide").click(function (node) {
+        $(".additionalalgos").hide();
+        $("#algosshow").show();
+    });
 
 });

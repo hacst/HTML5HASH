@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html itemscope itemtype="http://schema.org/WebApplication">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta itemprop="name" content="HTML5HASH" />
-    <meta itemprop="description" content="A tool that uses HTML5 features to provide file hashing with crc32, md5 and sha1 without the need to upload anything." />
+    <meta itemprop="description" content="A tool that uses HTML5 features to provide file hashing with crc32, md5, sha1, sha256, sha512, sha3 and ripdemd160 without the need to upload anything." />
     <!-- Does anyone parse these? Maybe for future crawlers ;-) -->
     <meta itemprop="author" content="Stefan Hacker" />
     <meta itemprop="applicationCategory" content="Tool" />
@@ -17,6 +17,10 @@
 
     <script type="text/javascript" src="js/md5.js"></script>
     <script type="text/javascript" src="js/sha1.js"></script>
+    <script type="text/javascript" src="js/sha256.js"></script>
+    <script type="text/javascript" src="js/sha512.js"></script>
+    <script type="text/javascript" src="js/sha3.js"></script>
+    <script type="text/javascript" src="js/ripemd160.js"></script>
     <script type="text/javascript" src="js/crc32.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
@@ -43,9 +47,29 @@
             <fieldset id="algo_selection">
                 <legend>Algorithm selection</legend>
                 <form>
-                    <input type="checkbox" name="sha1switch" />SHA1
-                    <input type="checkbox" name="md5switch" />MD5
-                    <input type="checkbox" name="crc32switch" checked="checked" />CRC-32
+                    <table>
+                        <tr>
+                            <td><input type="checkbox" name="crc32switch" checked="checked" />CRC-32</td>
+                            <td><input type="checkbox" name="MD5-switch" />MD5</td>
+                            <td><input type="checkbox" name="SHA1-switch" />SHA1   </td>
+                            <td id="algosshow"><a href="#">more</a></td>
+                        </tr>
+                        <tr class="additionalalgos">
+                            <td><input type="checkbox" name="RIPEMD-160-switch" />RIPEMD-160</td>
+                            <td><input type="checkbox" name="SHA256-switch" />SHA256</td>
+                            <td><input type="checkbox" name="SHA512-switch" />SHA512</td>
+                        </tr>
+                        <tr class="additionalalgos">
+                            <td><input type="checkbox" name="SHA3-224-switch" />SHA3-224</td>
+                            <td><input type="checkbox" name="SHA3-256-switch" />SHA3-256</td>
+                            <td><input type="checkbox" name="SHA3-384-switch" />SHA3-384</td>
+                        </tr>
+                        <tr class="additionalalgos">
+                            <td><input type="checkbox" name="SHA3-512-switch" />SHA3-512</td>
+                            <td>&nbsp;</td>
+                            <td id="algoshide"><a href="#">less</a></td>
+                        </tr>
+                    </table>
                 </form>
             </fieldset>
         
