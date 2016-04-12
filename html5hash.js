@@ -170,7 +170,7 @@ $().ready(function () {
                 var enabledAlgorithms = [];
                 for (var j = 0; j < algorithms.length; j++) {
                     var current = algorithms[j];
-                    if ($('[name="' + current.name + '-switch"]').attr("checked") == "checked") {
+                    if ($('[name="' + current.name + '-switch"]').prop("checked")) {
                         // Param will not exist for some but that's ok
                         var algoInst = { name: current.name, instance: current.type.create(current.param) };
                         enabledAlgorithms.push(algoInst);
@@ -178,7 +178,7 @@ $().ready(function () {
                 }
 
                 // Special case CRC32 as it's not part of CryptoJS and takes another input format.
-                var doCRC32 = $('[name="crc32switch"]').attr("checked") == "checked";
+                var doCRC32 = $('[name="crc32switch"]').prop("checked");
 
                 if (doCRC32) var crc32intermediate = 0;
 
@@ -341,3 +341,4 @@ $().ready(function () {
     });
 
 });
+
